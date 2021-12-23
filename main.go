@@ -50,8 +50,10 @@ func main() {
 		return
 	}
 
-	if err = validation.Validate(opts); err != nil {
-		logger.Fatalf("%s", err)
+	for i := range opts.Providers {
+		if err = validation.Validate(opts, i); err != nil {
+			logger.Fatalf("%s", err)
+		}
 	}
 
 	validator := NewValidator(opts.EmailDomains, opts.AuthenticatedEmailsFile)
