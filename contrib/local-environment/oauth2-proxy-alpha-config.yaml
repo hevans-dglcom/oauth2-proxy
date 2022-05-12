@@ -3,7 +3,6 @@ upstreamconfig:
     - id: httpbin
       path: /
       uri: http://httpbin
-RealClientIPHeader: X-Forwarded-For
 injectRequestHeaders:
   - name: X-Forwarded-Groups
     values:

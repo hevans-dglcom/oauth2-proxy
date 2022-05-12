@@ -43,14 +43,6 @@ type AlphaOptions struct {
 
 	// Providers is used to configure multiple providers.
 	Providers Providers `json:"providers,omitempty"`
-
-	// TrustedIPs is used to configure an array of trusted IP addresses that can skip auth
-	// These strings must be in the format of a CIDR notation
-	TrustedIPs []string
-
-	//RealClientIPHeader is the Header used to determine the origin IP address when
-	//oauth2proxy is behind an ingress or is used in a subauth architecture
-	RealClientIPHeader string
 }
 
 // MergeInto replaces alpha options in the Options struct with the values
@@ -62,8 +54,6 @@ func (a *AlphaOptions) MergeInto(opts *Options) {
 	opts.Server = a.Server
 	opts.MetricsServer = a.MetricsServer
 	opts.Providers = a.Providers
-	opts.TrustedIPs = a.TrustedIPs
-	opts.RealClientIPHeader = a.RealClientIPHeader
 }
 
 // ExtractFrom populates the fields in the AlphaOptions with the values from
