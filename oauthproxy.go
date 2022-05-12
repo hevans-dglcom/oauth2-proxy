@@ -1039,8 +1039,7 @@ func checkAllowedGroups(req *http.Request, s *sessionsapi.SessionState) bool {
 func extractAllowedGroups(req *http.Request) map[string]struct{} {
 	groups := map[string]struct{}{}
 
-	query := req.URL.Query()
-	for _, allowedGroups := range query["allowed_groups"] {
+	for _, allowedGroups := range append(req.URL.Query()["allowed_groups"], req.Header.Values("X-Allowed-Groups")...) {
 		for _, group := range strings.Split(allowedGroups, ",") {
 			if group != "" {
 				groups[group] = struct{}{}

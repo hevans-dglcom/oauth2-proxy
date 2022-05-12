@@ -186,18 +186,16 @@ func Validate(o *options.Options) error {
 
 	o.SetProviderMap()
 
-	if o.ReverseProxy {
-		parser, err := ip.GetRealClientIPParser(o.RealClientIPHeader)
-		if err != nil {
-			msgs = append(msgs, fmt.Sprintf("real_client_ip_header (%s) not accepted parameter value: %v", o.RealClientIPHeader, err))
-		}
-		o.SetRealClientIPParser(parser)
-
-		// Allow the logger to get client IPs
-		logger.SetGetClientFunc(func(r *http.Request) string {
-			return ip.GetClientString(o.GetRealClientIPParser(), r, false)
-		})
+	parser, err := ip.GetRealClientIPParser(o.RealClientIPHeader)
+	if err != nil {
+		msgs = append(msgs, fmt.Sprintf("real_client_ip_header (%s) not accepted parameter value: %v", o.RealClientIPHeader, err))
 	}
+	o.SetRealClientIPParser(parser)
+
+	// Allow the logger to get client IPs
+	logger.SetGetClientFunc(func(r *http.Request) string {
+		return ip.GetClientString(o.GetRealClientIPParser(), r, false)
+	})
 
 	// Do this after ReverseProxy validation for TrustedIP coordinated checks
 	msgs = append(msgs, validateAllowlists(o)...)
