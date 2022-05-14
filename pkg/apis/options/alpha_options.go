@@ -65,4 +65,5 @@ func (a *AlphaOptions) ExtractFrom(opts *Options) {
 	a.Server = opts.Server
 	a.MetricsServer = opts.MetricsServer
 	a.Providers = opts.Providers
+	a.Templates = opts.Templates
 }

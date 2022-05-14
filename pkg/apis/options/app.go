@@ -46,6 +46,8 @@ func templatesFlagSet() *pflag.FlagSet {
 	flagSet.String("footer", "", "custom footer string. Use \"-\" to disable default footer.")
 	flagSet.Bool("display-htpasswd-form", true, "display username / password login form if an htpasswd file is provided")
 	flagSet.Bool("show-debug-on-error", false, "show detailed error information on error pages (WARNING: this may contain sensitive information - do not use in production)")
+	flagSet.Bool("use-default-css", true, "use the default css file as provided by Oauth2Proxy")
+	flagSet.String("additional-css", "", "add additional css files into html template")
 
 	return flagSet
 }
