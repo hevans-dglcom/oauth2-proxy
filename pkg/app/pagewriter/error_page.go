@@ -36,6 +36,16 @@ type errorPageWriter struct {
 	// debug determines whether errors pages should be rendered with detailed
 	// errors.
 	debug bool
+
+	//UseDefaultCss is used to determine whether the default css is to be used (default enabled)
+	//If set to false it must be used with the additional css template option in order to at least have 1 external css avaliable.
+
+	disableDefaultCSS bool `flag:"disable-default-css" cfg:disable_default_css"`
+
+	//UseAdditionalCss can be used to add additional css templates into the html template.
+	//This is handy if the original css needs to be overidden for certain themes.
+
+	additionalCSS []string `flag:"additional-css" cfg:"additional_csss"`
 }
 
 // ErrorPageOpts bundles up all the content needed to write the Error Page
@@ -61,23 +71,27 @@ func (e *errorPageWriter) WriteErrorPage(rw http.ResponseWriter, opts ErrorPageO
 	// We allow unescaped template.HTML since it is user configured options
 	/* #nosec G203 */
 	data := struct {
-		Title       string
-		Message     string
-		ProxyPrefix string
-		StatusCode  int
-		Redirect    string
-		RequestID   string
-		Footer      template.HTML
-		Version     string
+		Title             string
+		Message           string
+		ProxyPrefix       string
+		StatusCode        int
+		Redirect          string
+		RequestID         string
+		Footer            template.HTML
+		Version           string
+		DisableDefaultCSS bool
+		AdditionalCSS     []string
 	}{
-		Title:       http.StatusText(opts.Status),
-		Message:     e.getMessage(opts.Status, opts.AppError, opts.Messages...),
-		ProxyPrefix: e.proxyPrefix,
-		StatusCode:  opts.Status,
-		Redirect:    opts.RedirectURL,
-		RequestID:   opts.RequestID,
-		Footer:      template.HTML(e.footer),
-		Version:     e.version,
+		Title:             http.StatusText(opts.Status),
+		Message:           e.getMessage(opts.Status, opts.AppError, opts.Messages...),
+		ProxyPrefix:       e.proxyPrefix,
+		StatusCode:        opts.Status,
+		Redirect:          opts.RedirectURL,
+		RequestID:         opts.RequestID,
+		Footer:            template.HTML(e.footer),
+		Version:           e.version,
+		DisableDefaultCSS: e.disableDefaultCSS,
+		AdditionalCSS:     e.additionalCSS,
 	}
 
 	if err := e.template.Execute(rw, data); err != nil {

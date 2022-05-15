@@ -125,16 +125,18 @@ func NewOAuthProxy(opts *options.Options, validator func(string) bool) (*OAuthPr
 	}
 
 	pageWriter, err := pagewriter.NewWriter(pagewriter.Opts{
-		TemplatesPath:    opts.Templates.Path,
-		CustomLogo:       opts.Templates.CustomLogo,
-		ProxyPrefix:      opts.ProxyPrefix,
-		Footer:           opts.Templates.Footer,
-		Version:          VERSION,
-		Debug:            opts.Templates.Debug,
-		ProviderName:     providerNameArray,
-		ProviderID:       providerIDArray,
-		SignInMessage:    buildSignInMessage(opts),
-		DisplayLoginForm: basicAuthValidator != nil && opts.Templates.DisplayLoginForm,
+		ProviderID:        providerIDArray,
+		TemplatesPath:     opts.Templates.Path,
+		CustomLogo:        opts.Templates.CustomLogo,
+		DisableDefaultCSS: opts.Templates.DisableDefaultCSS,
+		AdditionalCSS:     opts.Templates.AdditionalCSS,
+		ProxyPrefix:       opts.ProxyPrefix,
+		Footer:            opts.Templates.Footer,
+		Version:           VERSION,
+		Debug:             opts.Templates.Debug,
+		ProviderName:      buildProviderName(provider, opts.Providers[0].Name),
+		SignInMessage:     buildSignInMessage(opts),
+		DisplayLoginForm:  basicAuthValidator != nil && opts.Templates.DisplayLoginForm,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error initialising page writer: %v", err)

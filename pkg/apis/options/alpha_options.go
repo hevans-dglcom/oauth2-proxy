@@ -43,6 +43,9 @@ type AlphaOptions struct {
 
 	// Providers is used to configure multiple providers.
 	Providers Providers `json:"providers,omitempty"`
+
+	// Templates is used to configure the http templates used in the /oauth2/* pages
+	Templates Templates `json:"templates,omitempty"`
 }
 
 // MergeInto replaces alpha options in the Options struct with the values
@@ -54,6 +57,7 @@ func (a *AlphaOptions) MergeInto(opts *Options) {
 	opts.Server = a.Server
 	opts.MetricsServer = a.MetricsServer
 	opts.Providers = a.Providers
+	opts.Templates = a.Templates
 }
 
 // ExtractFrom populates the fields in the AlphaOptions with the values from
@@ -65,4 +69,5 @@ func (a *AlphaOptions) ExtractFrom(opts *Options) {
 	a.Server = opts.Server
 	a.MetricsServer = opts.MetricsServer
 	a.Providers = opts.Providers
+	a.Templates = opts.Templates
 }
