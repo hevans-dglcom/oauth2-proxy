@@ -56,6 +56,16 @@ type Opts struct {
 	// The logo can be either PNG, JPG/JPEG or SVG.
 	// If a URL is used, image support depends on the browser.
 	CustomLogo string
+
+	//UseDefaultCss is used to determine whether the default css is to be used (default enabled)
+	//If set to false it must be used with the additional css template option in order to at least have 1 external css avaliable.
+
+	DisableDefaultCSS bool
+
+	//UseAdditionalCss can be used to add additional css templates into the html template.
+	//This is handy if the original css needs to be overidden for certain themes.
+
+	AdditionalCSS []string
 }
 
 // NewWriter constructs a Writer from the options given to allow
@@ -72,23 +82,27 @@ func NewWriter(opts Opts) (Writer, error) {
 	}
 
 	errorPage := &errorPageWriter{
-		template:    templates.Lookup("error.html"),
-		proxyPrefix: opts.ProxyPrefix,
-		footer:      opts.Footer,
-		version:     opts.Version,
-		debug:       opts.Debug,
+		template:          templates.Lookup("error.html"),
+		disableDefaultCSS: opts.DisableDefaultCSS,
+		additionalCSS:     opts.AdditionalCSS,
+		proxyPrefix:       opts.ProxyPrefix,
+		footer:            opts.Footer,
+		version:           opts.Version,
+		debug:             opts.Debug,
 	}
 
 	signInPage := &signInPageWriter{
-		template:         templates.Lookup("sign_in.html"),
-		errorPageWriter:  errorPage,
-		proxyPrefix:      opts.ProxyPrefix,
-		providerName:     opts.ProviderName,
-		signInMessage:    opts.SignInMessage,
-		footer:           opts.Footer,
-		version:          opts.Version,
-		displayLoginForm: opts.DisplayLoginForm,
-		logoData:         logoData,
+		template:          templates.Lookup("sign_in.html"),
+		errorPageWriter:   errorPage,
+		disableDefaultCSS: opts.DisableDefaultCSS,
+		additionalCSS:     opts.AdditionalCSS,
+		proxyPrefix:       opts.ProxyPrefix,
+		providerName:      opts.ProviderName,
+		signInMessage:     opts.SignInMessage,
+		footer:            opts.Footer,
+		version:           opts.Version,
+		displayLoginForm:  opts.DisplayLoginForm,
+		logoData:          logoData,
 	}
 
 	staticPages, err := newStaticPageWriter(opts.TemplatesPath, errorPage)

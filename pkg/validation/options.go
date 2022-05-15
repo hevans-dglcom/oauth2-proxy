@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/mbland/hmacauth"
 	"github.com/oauth2-proxy/oauth2-proxy/v7/pkg/apis/options"
@@ -27,6 +28,7 @@ func Validate(o *options.Options) error {
 	msgs = append(msgs, validateProviders(o)...)
 	msgs = configureLogger(o.Logging, msgs)
 	msgs = parseSignatureKey(o, msgs)
+	msgs = validateCustomCss(msgs, o.Templates.AdditionalCSS, o.Templates.DisableDefaultCSS)
 
 	if o.SSLInsecureSkipVerify {
 		// InsecureSkipVerify is a configurable option we allow
@@ -182,4 +184,32 @@ func parseURL(toParse string, urltype string, msgs []string) (*url.URL, []string
 			"error parsing %s-url=%q %s", urltype, toParse, err))
 	}
 	return parsed, msgs
+}
+
+func validateCustomCss(msgs []string, additionalCustomCss []string, disableDefaultCSS bool) []string {
+
+	if len(additionalCustomCss) == 0 && disableDefaultCSS {
+		msgs := append(msgs, fmt.Sprintln("default css cannot be disabled if no other css files are specified"))
+		return msgs
+	}
+
+	c := http.Client{Timeout: time.Duration(1) * time.Second}
+
+	for i := range additionalCustomCss {
+		_, err := url.ParseRequestURI(additionalCustomCss[i])
+		if err != nil {
+			msgs := append(msgs, fmt.Sprintf("css url is not valid: %s", additionalCustomCss[i]))
+			return msgs
+		}
+
+		resp, err := c.Get(additionalCustomCss[i])
+
+		if resp.StatusCode != 200 || err != nil {
+			msgs := append(msgs, fmt.Sprintf("css url is not responding: %s", additionalCustomCss[i]))
+			msgs = append(msgs, fmt.Sprintf("The status code we got is: %v", resp.StatusCode))
+			return msgs
+		}
+	}
+
+	return msgs
 }
