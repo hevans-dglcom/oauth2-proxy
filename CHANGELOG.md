@@ -16,8 +16,11 @@ If you are using an architecture specific tag (ex: v7.2.1-arm64) you should move
 
 ## Breaking Changes
 
+- [#1500] Provider Name and ID are now required fields in the Alpha struct.
+
 ## Changes since v7.2.1
 
+- [#1652] (https://github.com/oauth2-proxy/oauth2-proxy/pull/1500) Added support for multiple providers + improved docker-compose options (@hevans-dglcom)
 - [#1651](https://github.com/oauth2-proxy/oauth2-proxy/pull/1651) Updated go-lang's text, crypto and prometheus dependencies to fix reported security vulnerabilities. (@rkkris75)
 - [#1595](https://github.com/oauth2-proxy/oauth2-proxy/pull/1595) Add optional `allowed_emails` query parameter to the `auth_request`. (@zv0n)
 - [#1478](https://github.com/oauth2-proxy/oauth2-proxy/pull/1478) Parameterise the runtime image (@omBratteng)

@@ -72,6 +72,7 @@ func NewTestProvider(providerURL *url.URL, emailAddress string) *TestProvider {
 	return &TestProvider{
 		ProviderData: &providers.ProviderData{
 			ProviderName: "Test Provider",
+			ProviderID:   "0",
 			LoginURL: &url.URL{
 				Scheme: "http",
 				Host:   providerURL.Host,
@@ -115,6 +116,7 @@ func Test_redeemCode(t *testing.T) {
 	}
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	_, err = proxy.redeemCode(req, 0, "ProviderID")
 	_, err = proxy.redeemCode(req, "")
 	assert.Equal(t, providers.ErrMissingCode, err)
 }
@@ -167,7 +169,7 @@ func Test_enrichSession(t *testing.T) {
 			}
 			proxy.provider = NewTestProvider(&url.URL{Host: "www.example.com"}, providerEmail)
 
-			err = proxy.enrichSessionState(context.Background(), tc.session)
+			err = proxy.enrichSessionState(context.Background(), tc.session, 0)
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedUser, tc.session.User)
 			assert.Equal(t, tc.expectedEmail, tc.session.Email)
@@ -414,7 +416,7 @@ func (patTest *PassAccessTokenTest) getCallbackEndpoint() (httpCode int, cookie 
 		http.MethodGet,
 		fmt.Sprintf(
 			"/oauth2/callback?code=callback_code&state=%s",
-			encodeState(csrf.HashOAuthState(), "%2F"),
+			encodeState(csrf.HashOAuthState(), "%2F", "0"),
 		),
 		strings.NewReader(""),
 	)
@@ -1152,7 +1154,7 @@ func TestAuthOnlyEndpointSetXAuthRequestHeaders(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pcTest.proxy.provider = &TestProvider{
+	pcTest.proxy.provider[0] = &TestProvider{
 		ProviderData: &providers.ProviderData{},
 		ValidToken:   true,
 	}
@@ -1245,7 +1247,7 @@ func TestAuthOnlyEndpointSetBasicAuthTrueRequestHeaders(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pcTest.proxy.provider = &TestProvider{
+	pcTest.proxy.provider[0] = &TestProvider{
 		ProviderData: &providers.ProviderData{},
 		ValidToken:   true,
 	}
@@ -1325,7 +1327,7 @@ func TestAuthOnlyEndpointSetBasicAuthFalseRequestHeaders(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pcTest.proxy.provider = &TestProvider{
+	pcTest.proxy.provider[0] = &TestProvider{
 		ProviderData: &providers.ProviderData{},
 		ValidToken:   true,
 	}
@@ -1460,6 +1462,10 @@ func NewSignatureTest() (*SignatureTest, error) {
 		return nil, err
 	}
 	testProvider := NewTestProvider(providerURL, "mbland@acm.org")
+
+	opts = opts.InitProviders()
+
+	opts.SetProvider(NewTestProvider(providerURL, "mbland@acm.org"), 0)
 
 	return &SignatureTest{
 		opts,
@@ -1839,7 +1845,7 @@ func TestGetJwtSession(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tp, _ := test.proxy.provider.(*TestProvider)
+	tp, _ := test.proxy.provider[0].(*TestProvider)
 	tp.GroupValidator = func(s string) bool {
 		return true
 	}
