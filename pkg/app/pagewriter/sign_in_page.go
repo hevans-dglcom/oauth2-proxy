@@ -72,7 +72,7 @@ func (s *signInPageWriter) WriteSignInPage(rw http.ResponseWriter, req *http.Req
 	/* #nosec G203 */
 
 	t := struct {
-		ProviderName      string
+		ProviderName      []string
 		SignInMessage     template.HTML
 		CustomLogin       bool
 		Redirect          string
@@ -82,7 +82,7 @@ func (s *signInPageWriter) WriteSignInPage(rw http.ResponseWriter, req *http.Req
 		LogoData          template.HTML
 		DisableDefaultCSS bool
 		AdditionalCSS     []string
-		ProviderID    []string
+		ProviderID        []string
 	}{
 		ProviderName:      s.providerName,
 		SignInMessage:     template.HTML(s.signInMessage),
@@ -94,7 +94,7 @@ func (s *signInPageWriter) WriteSignInPage(rw http.ResponseWriter, req *http.Req
 		LogoData:          template.HTML(s.logoData),
 		DisableDefaultCSS: s.disableDefaultCSS,
 		AdditionalCSS:     s.additionalCSS,
-		ProviderID:    s.providerID,
+		ProviderID:        s.providerID,
 	}
 
 	err := s.template.Execute(rw, t)
