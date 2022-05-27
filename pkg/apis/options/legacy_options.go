@@ -483,6 +483,7 @@ type LegacyProvider struct {
 
 	KeycloakGroups           []string `flag:"keycloak-group" cfg:"keycloak_groups"`
 	AzureTenant              string   `flag:"azure-tenant" cfg:"azure_tenant"`
+	AzureGroupField          string   `flag:"azure-group-field" cfg:"azure_group_field"`
 	BitbucketTeam            string   `flag:"bitbucket-team" cfg:"bitbucket_team"`
 	BitbucketRepository      string   `flag:"bitbucket-repository" cfg:"bitbucket_repository"`
 	GitHubOrg                string   `flag:"github-org" cfg:"github_org"`
@@ -536,6 +537,7 @@ func legacyProviderFlagSet() *pflag.FlagSet {
 
 	flagSet.StringSlice("keycloak-group", []string{}, "restrict logins to members of these groups (may be given multiple times)")
 	flagSet.String("azure-tenant", "common", "go to a tenant-specific or common (tenant-independent) endpoint.")
+	flagSet.String("azure-group-field", "", "configures the group field to be used when building the groups list(`id` or `displayName`. Default is `id`) from Microsoft Graph(available only for v2.0 oidc url). Based on this value, the `allowed-group` config values should be adjusted accordingly. If using `id` as group field, `allowed-group` should contains groups IDs, if using `displayName` as group field, `allowed-group` should contains groups name")
 	flagSet.String("bitbucket-team", "", "restrict logins to members of this team")
 	flagSet.String("bitbucket-repository", "", "restrict logins to user with access to this repository")
 	flagSet.String("github-org", "", "restrict logins to members of this organisation")
@@ -665,7 +667,8 @@ func (l *LegacyProvider) convert() (Providers, error) {
 	// This part is out of the switch section because azure has a default tenant
 	// that needs to be added from legacy options
 	provider.AzureConfig = AzureOptions{
-		Tenant: l.AzureTenant,
+		Tenant:     l.AzureTenant,
+		GroupField: l.AzureGroupField,
 	}
 
 	switch provider.Type {
