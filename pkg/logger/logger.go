@@ -258,11 +258,11 @@ func (l *Logger) PrintReq(username, upstream string, req *http.Request, url url.
 	err := l.reqTemplate.Execute(l.writer, reqLogMessageData{
 		Client:          client,
 		Host:            requestutil.GetRequestHost(req),
-		Protocol:        req.Proto,
+		Protocol:        requestutil.GetRequestProto(req),
 		RequestID:       scope.RequestID,
 		RequestDuration: fmt.Sprintf("%0.3f", duration),
 		RequestMethod:   req.Method,
-		RequestURI:      fmt.Sprintf("%q", url.RequestURI()),
+		RequestURI:      fmt.Sprintf("%q", requestutil.GetRequestURI(req)),
 		ResponseSize:    fmt.Sprintf("%d", size),
 		StatusCode:      fmt.Sprintf("%d", status),
 		Timestamp:       FormatTimestamp(ts),
