@@ -72,42 +72,22 @@ Note: The user is checked against the group members list on initial authenticati
 
 ### Azure Auth Provider
 
-1. Add an application: go to [https://portal.azure.com](https://portal.azure.com), choose **Azure Active Directory**, select 
-**App registrations** and then click on **New registration**.
-2. Pick a name, check the supported account type(singletenant, multitenant, etc). In the **Redirect URI** section create a new 
-**Web** platform entry for each app that you want to protect by the oauth2 proxy(e.g. 
-https://internal.yourcompanycom/oauth2/callback). Click **Register**.
-3. Next we need to add group read permissions for the app registration, on the **API Permissions** page of the app, click on 
-**Add a permission**, select **Microsoft Graph**, then select **Application permissions**, then click on **Group** and select 
-**Group.Read.All**. Hit **Add permissions** and then on **Grant admin consent** (you might need an admin to do this).
-4. On the **Certificates & secrets** page of the app, add a new client secret and note down the value after hitting **Add**.
-5. Configure the proxy with:
-- for V1 Azure Auth endpoint (Azure Active Directory Endpoints - https://login.microsoftonline.com/common/oauth2/authorize)
+1. Add an application: go to [https://portal.azure.com](https://portal.azure.com), choose **"Azure Active Directory"** in the left menu, select **"App registrations"** and then click on **"New app registration"**.
+2. Pick a name and choose **"Webapp / API"** as application type. Use `https://internal.yourcompany.com` as Sign-on URL. Click **"Create"**.
+3. On the **"Settings"** / **"Properties"** page of the app, pick a logo and select **"Multi-tenanted"** if you want to allow users from multiple organizations to access your app. Note down the application ID. Click **"Save"**.
+4. On the **"Settings"** / **"Required Permissions"** page of the app, click on **"Windows Azure Active Directory"** and then on **"Access the directory as the signed in user"**. Hit **"Save"** and then then on **"Grant permissions"** (you might need another admin to do this).
+5. On the **"Settings"** / **"Reply URLs"** page of the app, add `https://internal.yourcompanycom/oauth2/callback` for each host that you want to protect by the oauth2 proxy. Click **"Save"**.
+6. On the **"Settings"** / **"Keys"** page of the app, add a new key and note down the value after hitting **"Save"**.
+7. Configure the proxy with
 
 ```
    --provider=azure
    --client-id=<application ID from step 3>
-   --client-secret=<value from step 5>
-   --azure_tenant={tenant-id}
-   --oidc_issuer_url=https://sts.windows.net/{tenant-id}/
+   --client-secret=<value from step 6>
+   --oidc-issuer-url=https://sts.windows.net/{tenant-id}/
 ```
 
-- for V2 Azure Auth endpoint (Microsoft Identity Platform Endpoints - https://login.microsoftonline.com/common/oauth2/v2.0/authorize)
-```
-   --provider=azure
-   --client-id=<application ID from step 3>
-   --client-secret=<value from step 5>
-   --azure_tenant={tenant-id}
-   --oidc_issuer_url=https://login.microsoftonline.com/{tenant-id}/v2.0
-```
-
-***Notes***:
-- When using v2.0 Azure Auth endpoint (`https://login.microsoftonline.com/{tenant-id}/v2.0`) as `--oidc_issuer_url`, in conjunction 
-with `--resource` flag, be sure to append `/.default` at the end of the resource name. See
-https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#the-default-scope for more details.
-- When using the Azure Auth provider with nginx and the cookie session store you may find the cookie is too large and doesn't 
-get passed through correctly. Increasing the proxy_buffer_size in nginx or implementing the [redis session storage](
-sessions.md#redis-storage) should resolve this.
+Note: When using the Azure Auth provider with nginx and the cookie session store you may find the cookie is too large and doesn't get passed through correctly. Increasing the proxy_buffer_size in nginx or implementing the [redis session storage](sessions.md#redis-storage) should resolve this.
 
 ### ADFS Auth Provider
 

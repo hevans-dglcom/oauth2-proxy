@@ -166,7 +166,6 @@ They may change between releases without notice.
 | Field | Type | Description |
 | ----- | ---- | ----------- |
 | `tenant` | _string_ | Tenant directs to a tenant-specific or common (tenant-independent) endpoint<br/>Default value is 'common' |
-| `groupField` | _string_ | GroupField configures the group field to be used when building the group list<br/>Default value is 'id' |
 
 ### BitbucketOptions
 

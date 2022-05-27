@@ -3,7 +3,6 @@ module github.com/oauth2-proxy/oauth2-proxy/v7
 go 1.18
 
 require (
-	github.com/AzureAD/microsoft-authentication-library-for-go v0.4.0
 	github.com/Bose/minisentinel v0.0.0-20200130220412-917c5a9223bb
 	github.com/alicebob/miniredis/v2 v2.13.0
 	github.com/benbjohnson/clock v1.1.1-0.20210213131748-c97fc7b6bee0
@@ -55,7 +54,6 @@ require (
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/nxadm/tail v1.4.4 // indirect
