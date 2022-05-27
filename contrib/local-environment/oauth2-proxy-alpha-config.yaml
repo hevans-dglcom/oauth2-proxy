@@ -3,6 +3,11 @@ upstreamconfig:
     - id: httpbin
       path: /
       uri: http://httpbin
+templates:
+  disableDefaultCSS: false
+  additionalCss:
+    - "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  customLogo: https://dyltqmyl993wv.cloudfront.net/assets/stacks/oauth2-proxy/img/oauth2-proxy-stack-110x117.png
 injectRequestHeaders:
   - name: X-Forwarded-Groups
     values:

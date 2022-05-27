@@ -100,7 +100,6 @@ func NewOptions() *Options {
 		ForceHTTPS:         false,
 		Cookie:             cookieDefaults(),
 		Session:            sessionOptionsDefaults(),
-		Templates:          templatesDefaults(),
 		SkipAuthPreflight:  false,
 		Logging:            loggingDefaults(),
 	}

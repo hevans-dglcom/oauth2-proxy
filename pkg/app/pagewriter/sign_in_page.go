@@ -53,6 +53,16 @@ type signInPageWriter struct {
 	// LogoData is the logo to render in the template.
 	// This should contain valid html.
 	logoData string
+
+	//UseDefaultCss is used to determine whether the default css is to be used (default enabled)
+	//If set to false it must be used with the additional css template option in order to at least have 1 external css avaliable.
+
+	disableDefaultCSS bool `flag:"disable-default-css" cfg:"disable_default_css"`
+
+	//UseAdditionalCss can be used to add additional css templates into the html template.
+	//This is handy if the original css needs to be overidden for certain themes.
+
+	additionalCSS []string `flag:"additional-css" cfg:"additional_csss"`
 }
 
 // WriteSignInPage writes the sign-in page to the given response writer.
@@ -62,25 +72,29 @@ func (s *signInPageWriter) WriteSignInPage(rw http.ResponseWriter, req *http.Req
 	/* #nosec G203 */
 
 	t := struct {
-		ProviderName  []string
+		ProviderName      string
+		SignInMessage     template.HTML
+		CustomLogin       bool
+		Redirect          string
+		Version           string
+		ProxyPrefix       string
+		Footer            template.HTML
+		LogoData          template.HTML
+		DisableDefaultCSS bool
+		AdditionalCSS     []string
 		ProviderID    []string
-		SignInMessage template.HTML
-		CustomLogin   bool
-		Redirect      string
-		Version       string
-		ProxyPrefix   string
-		Footer        template.HTML
-		LogoData      template.HTML
 	}{
-		ProviderName:  s.providerName,
+		ProviderName:      s.providerName,
+		SignInMessage:     template.HTML(s.signInMessage),
+		CustomLogin:       s.displayLoginForm,
+		Redirect:          redirectURL,
+		Version:           s.version,
+		ProxyPrefix:       s.proxyPrefix,
+		Footer:            template.HTML(s.footer),
+		LogoData:          template.HTML(s.logoData),
+		DisableDefaultCSS: s.disableDefaultCSS,
+		AdditionalCSS:     s.additionalCSS,
 		ProviderID:    s.providerID,
-		SignInMessage: template.HTML(s.signInMessage),
-		CustomLogin:   s.displayLoginForm,
-		Redirect:      redirectURL,
-		Version:       s.version,
-		ProxyPrefix:   s.proxyPrefix,
-		Footer:        template.HTML(s.footer),
-		LogoData:      template.HTML(s.logoData),
 	}
 
 	err := s.template.Execute(rw, t)

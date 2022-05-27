@@ -115,6 +115,7 @@ func loadAlphaOptions(config, alphaConfig string, extraFlags *pflag.FlagSet, arg
 	}
 
 	alphaOpts.MergeInto(opts)
+
 	return opts, nil
 }
 

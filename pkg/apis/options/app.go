@@ -35,6 +35,16 @@ type Templates struct {
 	// information.
 	// Use only for diagnosing backend errors.
 	Debug bool `flag:"show-debug-on-error" cfg:"show_debug_on_error"`
+
+	//UseDefaultCss is used to determine whether the default css is to be used (default enabled)
+	//If set to false it must be used with the additional css template option in order to at least have 1 external css avaliable.
+
+	DisableDefaultCSS bool `flag:"disable-default-css" cfg:"disable_default_css"`
+
+	//UseAdditionalCss can be used to add additional css templates into the html template.
+	//This is handy if the original css needs to be overidden for certain themes.
+
+	AdditionalCSS []string `flag:"additional-css" cfg:"additional_csss"`
 }
 
 func templatesFlagSet() *pflag.FlagSet {
@@ -46,13 +56,8 @@ func templatesFlagSet() *pflag.FlagSet {
 	flagSet.String("footer", "", "custom footer string. Use \"-\" to disable default footer.")
 	flagSet.Bool("display-htpasswd-form", true, "display username / password login form if an htpasswd file is provided")
 	flagSet.Bool("show-debug-on-error", false, "show detailed error information on error pages (WARNING: this may contain sensitive information - do not use in production)")
+	flagSet.Bool("disable-default-css", false, "use the default css file as provided by Oauth2Proxy")
+	flagSet.String("additional-css", "", "add additional css files into html template")
 
 	return flagSet
-}
-
-// templatesDefaults creates a Templates and populates it with any default values
-func templatesDefaults() Templates {
-	return Templates{
-		DisplayLoginForm: true,
-	}
 }

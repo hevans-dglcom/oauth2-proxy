@@ -153,6 +153,7 @@ They may change between releases without notice.
 | `injectResponseHeaders` | _[[]Header](#header)_ | InjectResponseHeaders is used to configure headers that should be added<br/>to responses from the proxy.<br/>This is typically used when using the proxy as an external authentication<br/>provider in conjunction with another proxy such as NGINX and its<br/>auth_request module.<br/>Headers may source values from either the authenticated user's session<br/>or from a static secret value. |
 | `server` | _[Server](#server)_ | Server is used to configure the HTTP(S) server for the proxy application.<br/>You may choose to run both HTTP and HTTPS servers simultaneously.<br/>This can be done by setting the BindAddress and the SecureBindAddress simultaneously.<br/>To use the secure server you must configure a TLS certificate and key. |
 | `metricsServer` | _[Server](#server)_ | MetricsServer is used to configure the HTTP(S) server for metrics.<br/>You may choose to run both HTTP and HTTPS servers simultaneously.<br/>This can be done by setting the BindAddress and the SecureBindAddress simultaneously.<br/>To use the secure server you must configure a TLS certificate and key. |
+| `templates` | _[templates](#templates)_ | Templates is used to configure the html templates for the sign_in and error pages. |
 | `providers` | _[Providers](#providers)_ | Providers is used to configure multiple providers. |
 | `defaultProvider`| _string_ | DefaultProvider is used to specify the provider that can still use /oauth2/start in a multiple provider configuration. |
 
@@ -467,6 +468,24 @@ Server represents the configuration for an HTTP(S) server
 | `BindAddress` | _string_ | BindAddress is the address on which to serve traffic.<br/>Leave blank or set to "-" to disable. |
 | `SecureBindAddress` | _string_ | SecureBindAddress is the address on which to serve secure traffic.<br/>Leave blank or set to "-" to disable. |
 | `TLS` | _[TLS](#tls)_ | TLS contains the information for loading the certificate and key for the<br/>secure traffic and further configuration for the TLS server. |
+
+### Templates
+
+(**Appears on:** [AlphaOptions](#alphaoptions))
+
+Templates represents the configuration for the html templates
+which generates the sign-in and error pages
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `Path` | _string_ | Path is the path to a folder containing a sign_in.html and an error.html template.<br/>These files will be used instead of the default templates if present.<br/>If either file is missing, the default will be used instead.<br/>Leave blank to disable. |
+| `CustomLogo` | _string_ | CustomLogo is the path or a URL to a logo that should replace the default logo on the sign_in page template.<br/>Supported formats are .svg, .png, .jpg and .jpeg.<br/>To disable the default logo, set this value to "-". |
+| `Banner` | _string_ | Banner overides the default sign_in page banner text. If unspecified, the message will give users a list of allowed email domains. |
+| `Footer` | _string_ | Footer overrides the default sign_in page footer text. |
+| `DisplayLoginForm` | _bool_ | DisplayLoginForm determines whether the sign_in page should render a password form if a static passwords file (htpasswd file) has been configured.<br/>Defaults to false. |
+| `Debug` | _bool_ | Debug renders detailed errors when an error page is shown.<br/>It is not advised to use this in production as errors may contain sensitive information.<br/>Defaults to false. |
+| `DisableDefaultCSS` | _bool_ | DisableDefaultCss is used to determine whether the default css is to be used.<br/>If set to true it must be used with the additional css template option in order to at least have 1 external css avaliable.<br/>Defaults to false. |
+| `AdditionalCSS` | _[]string_ | AdditionalCSS can be used to add additional css templates into the html template below the first.<br/>This is handy if original css componants need to be overidden for certain themes. |
 
 ### TLS
 
