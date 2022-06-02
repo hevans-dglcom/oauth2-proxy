@@ -134,7 +134,7 @@ func NewOAuthProxy(opts *options.Options, validator func(string) bool) (*OAuthPr
 		Footer:            opts.Templates.Footer,
 		Version:           VERSION,
 		Debug:             opts.Templates.Debug,
-		ProviderName:      buildProviderName(provider, opts.Providers[0].Name),
+		ProviderName:      providerNameArray,
 		SignInMessage:     buildSignInMessage(opts),
 		DisplayLoginForm:  basicAuthValidator != nil && opts.Templates.DisplayLoginForm,
 	})

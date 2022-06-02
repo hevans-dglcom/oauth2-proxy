@@ -54,7 +54,7 @@ type signInPageWriter struct {
 	// This should contain valid html.
 	logoData string
 
-	//UseDefaultCss is used to determine whether the default css is to be used (default enabled)
+	//DisableDefaultCss is used to determine whether the default css is to be used (default enabled)
 	//If set to false it must be used with the additional css template option in order to at least have 1 external css avaliable.
 
 	disableDefaultCSS bool `flag:"disable-default-css" cfg:"disable_default_css"`

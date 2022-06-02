@@ -60,7 +60,7 @@ type Opts struct {
 	// If a URL is used, image support depends on the browser.
 	CustomLogo string
 
-	//UseDefaultCss is used to determine whether the default css is to be used (default enabled)
+	//DisableDefaultCss is used to determine whether the default css is to be used (default enabled)
 	//If set to false it must be used with the additional css template option in order to at least have 1 external css avaliable.
 
 	DisableDefaultCSS bool

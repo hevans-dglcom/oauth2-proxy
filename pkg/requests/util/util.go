@@ -10,6 +10,7 @@ const (
 	XForwardedProto = "X-Forwarded-Proto"
 	XForwardedHost  = "X-Forwarded-Host"
 	XForwardedURI   = "X-Forwarded-Uri"
+	XForwardedFor   = "X-Forwarded-For"
 )
 
 // GetRequestProto returns the request scheme or X-Forwarded-Proto if present
@@ -56,4 +57,12 @@ func IsProxied(req *http.Request) bool {
 func IsForwardedRequest(req *http.Request) bool {
 	return IsProxied(req) &&
 		req.Host != GetRequestHost(req)
+}
+
+func GetRealIP(req *http.Request) string {
+	client := req.Header.Get(XForwardedFor)
+	if !IsProxied(req) || client == "" {
+		client = req.RemoteAddr
+	}
+	return client
 }
