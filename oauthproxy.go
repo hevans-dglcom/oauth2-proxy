@@ -1062,6 +1062,7 @@ func authOnlyAuthorize(req *http.Request, s *sessionsapi.SessionState) bool {
 		checkAllowedGroups,
 		checkAllowedEmailDomains,
 		checkAllowedEmails,
+		checkAllowedProviders,
 	}
 
 	for _, constraint := range constraints {
@@ -1076,11 +1077,19 @@ func authOnlyAuthorize(req *http.Request, s *sessionsapi.SessionState) bool {
 // extractAllowedEntities aims to extract and split allowed entities linked by a key,
 // from an HTTP request query. Output is a map[string]struct{} where keys are valuable,
 // the goal is to avoid time complexity O(N^2) while finding matches during membership checks.
-func extractAllowedEntities(req *http.Request, key string) map[string]struct{} {
+func extractAllowedEntities(req *http.Request, parameterKey string, headerKey string) map[string]struct{} {
 	entities := map[string]struct{}{}
 
-	query := req.URL.Query()
-	for _, allowedEntities := range query[key] {
+	parameterQuery := req.URL.Query()
+	for _, allowedEntities := range parameterQuery[parameterKey] {
+		for _, entity := range strings.Split(allowedEntities, ",") {
+			if entity != "" {
+				entities[entity] = struct{}{}
+			}
+		}
+	}
+
+	for _, allowedEntities := range req.Header[headerKey] {
 		for _, entity := range strings.Split(allowedEntities, ",") {
 			if entity != "" {
 				entities[entity] = struct{}{}
@@ -1094,7 +1103,7 @@ func extractAllowedEntities(req *http.Request, key string) map[string]struct{} {
 // checkAllowedEmailDomains allow email domain restrictions based on the `allowed_email_domains`
 // querystring parameter
 func checkAllowedEmailDomains(req *http.Request, s *sessionsapi.SessionState) bool {
-	allowedEmailDomains := extractAllowedEntities(req, "allowed_email_domains")
+	allowedEmailDomains := extractAllowedEntities(req, "allowed_email_domains", "X-Allowed-Email-Domains")
 	if len(allowedEmailDomains) == 0 {
 		return true
 	}
@@ -1118,7 +1127,7 @@ func checkAllowedEmailDomains(req *http.Request, s *sessionsapi.SessionState) bo
 // checkAllowedGroups allow secondary group restrictions based on the `allowed_groups`
 // querystring parameter
 func checkAllowedGroups(req *http.Request, s *sessionsapi.SessionState) bool {
-	allowedGroups := extractAllowedEntities(req, "allowed_groups")
+	allowedGroups := extractAllowedEntities(req, "allowed_groups", "X-Allowed-Groups")
 	if len(allowedGroups) == 0 {
 		return true
 	}
@@ -1135,7 +1144,7 @@ func checkAllowedGroups(req *http.Request, s *sessionsapi.SessionState) bool {
 // checkAllowedEmails allow email restrictions based on the `allowed_emails`
 // querystring parameter
 func checkAllowedEmails(req *http.Request, s *sessionsapi.SessionState) bool {
-	allowedEmails := extractAllowedEntities(req, "allowed_emails")
+	allowedEmails := extractAllowedEntities(req, "allowed_emails", "X-Allowed-Emails")
 	if len(allowedEmails) == 0 {
 		return true
 	}
@@ -1144,6 +1153,26 @@ func checkAllowedEmails(req *http.Request, s *sessionsapi.SessionState) bool {
 
 	for email := range allowedEmails {
 		if email == s.Email {
+			allowed = true
+			break
+		}
+	}
+
+	return allowed
+}
+
+// checkAllowedEmails allow email restrictions based on the `allowed_providers`
+// querystring parameter
+func checkAllowedProviders(req *http.Request, s *sessionsapi.SessionState) bool {
+	allowedProviders := extractAllowedEntities(req, "allowed_providers", "X-Allowed-Providers")
+	if len(allowedProviders) == 0 {
+		return true
+	}
+
+	allowed := false
+
+	for provider := range allowedProviders {
+		if provider == s.ProviderID {
 			allowed = true
 			break
 		}
