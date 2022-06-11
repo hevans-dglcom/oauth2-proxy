@@ -26,9 +26,9 @@ const (
 	// DefaultStandardLoggingFormat defines the default standard log format
 	DefaultStandardLoggingFormat = "[{{.Timestamp}}] [{{.File}}] {{.Message}}"
 	// DefaultAuthLoggingFormat defines the default auth log format
-	DefaultAuthLoggingFormat = "{{.Client}} - {{.RequestID}} - {{.Username}} [{{.Timestamp}}] [{{.Status}}] {{.Message}}"
+	DefaultAuthLoggingFormat = `{"client": "{{.Client}}", "requestId": "{{.RequestID}}", "username": "{{.Username}}", "timestamp": "{{.Timestamp}}", "status": "{{.Status}}", "message": "{{.Message}}"}`
 	// DefaultRequestLoggingFormat defines the default request log format
-	DefaultRequestLoggingFormat = "{{.Client}} - {{.RequestID}} - {{.Username}} [{{.Timestamp}}] {{.Host}} {{.RequestMethod}} {{.Upstream}} {{.RequestURI}} {{.Protocol}} {{.UserAgent}} {{.StatusCode}} {{.ResponseSize}} {{.RequestDuration}}"
+	DefaultRequestLoggingFormat = `{"client": "{{.Client}}", "requestId": "{{.RequestID}}", "username": "{{.Username}}", "timestamp": "{{.Timestamp}}", "method": "{{.RequestMethod}}", "protocol" : "{{.Protocol}}", "host": "{{.Host}}", "path": "{{.RequestURI}}", "url": "{{.Protocol}}{{.Host}}{{.RequestURI}} ", "upstream": "{{.Upstream}}", "userAgent": "{{.UserAgent}}", "statusCode": "{{.StatusCode}}", "responseSize": "{{.ResponseSize}}", "requestDuration": "{{.RequestDuration}}" }`
 
 	// AuthSuccess indicates that an auth attempt has succeeded explicitly
 	AuthSuccess AuthStatus = "AuthSuccess"
@@ -262,7 +262,7 @@ func (l *Logger) PrintReq(username, upstream string, req *http.Request, url url.
 		RequestID:       scope.RequestID,
 		RequestDuration: fmt.Sprintf("%0.3f", duration),
 		RequestMethod:   req.Method,
-		RequestURI:      fmt.Sprintf("%q", requestutil.GetRequestURI(req)),
+		RequestURI:      fmt.Sprintf(requestutil.GetRequestURI(req)),
 		ResponseSize:    fmt.Sprintf("%d", size),
 		StatusCode:      fmt.Sprintf("%d", status),
 		Timestamp:       FormatTimestamp(ts),
