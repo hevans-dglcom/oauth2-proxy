@@ -1,6 +1,6 @@
 .PHONY: up
 up:
-	docker-compose up -d
+	VERSION=$(shell git branch --show-current | sed "s/\//_/g") docker-compose up -d
 
 .PHONY: down
 down:
@@ -8,7 +8,7 @@ down:
 
 .PHONY: alpha-config-up
 alpha-config-up:
-	docker-compose -f docker-compose.yaml -f docker-compose-alpha-config.yaml up -d
+	VERSION=$(shell git branch --show-current | sed "s/\//_/g") docker-compose -f docker-compose.yaml -f docker-compose-alpha-config.yaml up -d
 
 .PHONY: alpha-config-down
 alpha-config-down:
@@ -16,11 +16,11 @@ alpha-config-down:
 
 .PHONY: alpha-config-multiple-providers-up
 alpha-config-multiple-providers-up:
-	docker-compose -f docker-compose.yaml -f docker-compose-multiple-providers.yaml -f docker-compose-alpha-config.yaml up -d
+	docker-compose -f docker-compose.yaml -f docker-compose-multiple-providers.yaml up -d
 
 .PHONY: alpha-config-multiple-providers-down
 alpha-config-multiple-providers-down:
-	docker-compose -f docker-compose.yaml -f docker-compose-multiple-providers.yaml -f docker-compose-alpha-config.yaml down --remove-orphans
+	docker-compose -f docker-compose.yaml -f docker-compose-multiple-providers.yaml down --remove-orphans
 
 .PHONY: build-up
 build-up:

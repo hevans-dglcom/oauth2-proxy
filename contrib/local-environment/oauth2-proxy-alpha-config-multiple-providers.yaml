@@ -4,11 +4,11 @@ upstreamconfig:
       path: /
       uri: http://httpbin
 templates:
-  disableDefaultCSS: false
   additionalCss:
-    - "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-  customLogo: https://dyltqmyl993wv.cloudfront.net/assets/stacks/oauth2-proxy/img/oauth2-proxy-stack-110x117.png
-injectRequestHeaders:
+    - https://media.douglas.de/hybr/lib/css/oauthDglecom.css
+  customLogo: https://www.tempelhofer-hafen.com/fileadmin/user_upload/GLOBAL/brand_stores/logos/douglas.jpg
+  displayLoginForm: true
+injectResponseHeaders:
   - name: X-Forwarded-Groups
     values:
     - claim: groups
@@ -18,9 +18,9 @@ injectRequestHeaders:
   - name: X-Forwarded-Email
     values:
     - claim: email
-  - name: X-Forwarded-Preferred-Username
+  - name: X-Forwarded-Provider
     values:
-    - claim: preferred_username
+    - claim: provider
 providers:
 - provider: oidc
   id: dex
@@ -29,12 +29,13 @@ providers:
   clientID: oauth2-proxy
   oidcConfig:
     issuerURL: http://dex.localhost:4190/dex
-    emailClaim: email
-    groupsClaim: groups
-    insecureSkipNonce: true
-    userIDClaim: email
-    audienceClaims:
-    - aud
+- provider: oidc
+  id: keycloak
+  name: "@keycloakexample.com"
+  clientSecret: 72341b6d-7065-4518-a0e4-50ee15025608
+  clientID: oauth2-proxy
+  oidcConfig:
+    issuerURL: http://keycloak.localtest.me:9080/auth/realms/master
 server:
   BindAddress: 0.0.0.0:4180
   SecureBindAddress: ""
