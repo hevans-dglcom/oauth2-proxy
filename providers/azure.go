@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
+
 	"github.com/bitly/go-simplejson"
 	"github.com/oauth2-proxy/oauth2-proxy/v7/pkg/apis/sessions"
 	"github.com/oauth2-proxy/oauth2-proxy/v7/pkg/logger"
@@ -146,11 +148,24 @@ func (p *AzureProvider) Redeem(ctx context.Context, redirectURL, code string, id
 		return nil, err
 	}
 
+	token, err := jwt.Parse(jsonResponse.IDToken, nil)
+	if token == nil {
+		return nil, err
+	}
+	claims, _ := token.Claims.(jwt.MapClaims)
+
+	groups := make([]string, len(claims["groups"].([]interface{})))
+
+	for i, v := range claims["groups"].([]interface{}) {
+		groups[i] = fmt.Sprint(v)
+	}
+
 	session := &sessions.SessionState{
 		AccessToken:  jsonResponse.AccessToken,
 		IDToken:      jsonResponse.IDToken,
 		RefreshToken: jsonResponse.RefreshToken,
 		ProviderID:   idString,
+		Groups:       groups,
 	}
 	session.CreatedAtNow()
 	session.SetExpiresOn(time.Unix(jsonResponse.ExpiresOn, 0))
