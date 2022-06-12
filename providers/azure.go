@@ -9,8 +9,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
-
 	"github.com/bitly/go-simplejson"
 	"github.com/oauth2-proxy/oauth2-proxy/v7/pkg/apis/sessions"
 	"github.com/oauth2-proxy/oauth2-proxy/v7/pkg/logger"
@@ -27,7 +25,7 @@ var _ Provider = (*AzureProvider)(nil)
 
 const (
 	azureProviderName = "Azure"
-	azureDefaultScope = "openid"
+	azureDefaultScope = "openid,profile,email"
 )
 
 var (
@@ -148,17 +146,11 @@ func (p *AzureProvider) Redeem(ctx context.Context, redirectURL, code string, id
 		return nil, err
 	}
 
-	token, err := jwt.Parse(jsonResponse.IDToken, nil)
-	if token == nil {
-		return nil, err
-	}
-	claims, _ := token.Claims.(jwt.MapClaims)
+	groups, _ := p.getGroupsFromProfileAPI(ctx, jsonResponse.AccessToken)
 
-	groups := make([]string, len(claims["groups"].([]interface{})))
+	logger.Print(jsonResponse.AccessToken)
 
-	for i, v := range claims["groups"].([]interface{}) {
-		groups[i] = fmt.Sprint(v)
-	}
+	logger.Print(jsonResponse.IDToken)
 
 	session := &sessions.SessionState{
 		AccessToken:  jsonResponse.AccessToken,
@@ -375,6 +367,43 @@ func (p *AzureProvider) getEmailFromProfileAPI(ctx context.Context, accessToken 
 	}
 
 	return getEmailFromJSON(json)
+}
+
+func (p *AzureProvider) getGroupsFromProfileAPI(ctx context.Context, accessToken string) ([]string, error) {
+	if accessToken == "" {
+		return nil, errors.New("missing access token")
+	}
+
+	groupsURL := p.ProfileURL.String() + "/transitiveMemberOf?&$select=id"
+
+	json, err := requests.New(groupsURL).
+		WithContext(ctx).
+		WithHeaders(makeAzureHeader(accessToken)).
+		Do().
+		UnmarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+
+	return getGroupsFromJSON(json)
+}
+
+func getGroupsFromJSON(json *simplejson.Json) ([]string, error) {
+
+	var groups []string
+	var err error
+
+	values, err := json.Get("value").Array()
+	if err != nil || values == nil {
+		for _, item := range values {
+			if m, ok := item.(map[string]interface{}); ok {
+				groups = append(groups, m["id"].(string))
+			}
+
+		}
+	}
+
+	return groups, err
 }
 
 // ValidateSession validates the AccessToken
